@@ -10,20 +10,72 @@ app.use(cors());
 const users = [];
 
 function checksExistsUserAccount(request, response, next) {
-  // Complete aqui
+  const { username } = request.headers;
+
+  const user = users.some(user => user.username === username);
+
+  if(user){
+    return response.status(404).json({error: "Username already exists!"});
+  };
+
+  request.user = user;
+
+  return next();
 }
 
 function checksCreateTodosUserAvailability(request, response, next) {
-  // Complete aqui
-}
+  const { user } = request;
+
+  if(user.pro && user.todos.length === 10){
+    return response.status(403).json({error: "User has a free account and already 10 todos"});
+  };
+
+  if(user.pro && user.todos.length < 10 || !user.pro && user.todos.length < 10){
+    return next();
+  };
+};
 
 function checksTodoExists(request, response, next) {
-  // Complete aqui
-}
+  const { username } = request.headers;
+  const { id } = request.params;
+  
+  const user = users.find(user => user.username === username);
+  const todo = user.todos.find(todo => todo.id === id);
+
+  if(!user.todos.id === uuidv4()){
+    return response.status(400).json({error: "Id do todo não é um guid"});
+  };
+
+  if(todo){
+    return response.status(404).json({error: "Todo not found"})
+  }
+
+  if(user){
+    return response.status(404).json({error: "Username not found"})
+  }
+
+  request.user = user;
+  request.id = todo;
+
+  return next();
+};
 
 function findUserById(request, response, next) {
-  // Complete aqui
-}
+  const { id } = request.params;
+  const { username } = request.headers;
+
+  const user = users.find(user => user.username === username);
+  const id = users.find(user => user.id === id);
+
+  if(user.id){
+    return response.status(404).json({error: "Id doesn't belong to any user"});
+  };
+
+  request.user = user;
+
+  return next();
+
+};
 
 app.post('/users', (request, response) => {
   const { name, username } = request.body;

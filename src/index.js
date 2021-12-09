@@ -14,8 +14,8 @@ function checksExistsUserAccount(request, response, next) {
 
   const user = users.some(user => user.username === username);
 
-  if(user){
-    return response.status(404).json({error: "Username already exists!"});
+  if(!user){
+    return response.status(400).json({error: "Username already exists!"});
   };
 
   request.user = user;
@@ -43,14 +43,14 @@ function checksTodoExists(request, response, next) {
   const todo = user.todos.find(todo => todo.id === id);
 
   if(!user.todos.id === uuidv4()){
-    return response.status(400).json({error: "Id do todo não é um guid"});
+    return response.status(400).json({error: "Id of todo is not a guid"});
   };
 
-  if(todo){
+  if(!todo){
     return response.status(404).json({error: "Todo not found"})
   }
 
-  if(user){
+  if(!user){
     return response.status(404).json({error: "Username not found"})
   }
 
@@ -65,9 +65,9 @@ function findUserById(request, response, next) {
   const { username } = request.headers;
 
   const user = users.find(user => user.username === username);
-  const id = users.find(user => user.id === id);
+  const userid = users.find(user => user.id === id);
 
-  if(user.id){
+  if(userid.id){
     return response.status(404).json({error: "Id doesn't belong to any user"});
   };
 
@@ -171,6 +171,8 @@ app.delete('/todos/:id', checksExistsUserAccount, checksTodoExists, (request, re
 
   return response.status(204).send();
 });
+
+app.listen(3333);
 
 module.exports = {
   app,
